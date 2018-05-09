@@ -110,8 +110,45 @@ public class RLE {
         List<Integer> byteList = new ArrayList<>();
         while ((byteRead = is.read()) != -1) {
             //si la lista no esta vacia
-            /*if (!byteList.isEmpty()) {
-                //si el numero se repite dos veces y tiene que empezar otro bucle
+            if (byteList.isEmpty()) {
+                byteList.add(byteRead);
+                os.write(byteRead);
+                pos++;
+            }
+            //si contiene numeros
+            else {
+                //si es la cantidad de veces que se repite un numero
+                if (firstRepeat && !maxRepeat && !minRepeat && byteList.get(pos - 1).equals(byteList.get(pos - 2))) {
+                    if (byteRead != 0) {
+                        for (int i = 0; i < byteRead; i++) {
+                            byteList.add(byteList.get(pos - 1));
+                            os.write(byteList.get(pos - 1));
+                            pos++;
+                        }
+                        if (byteRead == 255) {
+                            maxRepeat = true;
+                        } else {
+                            maxRepeat = false;
+                            firstRepeat = false;
+                        }
+                    } else minRepeat = true;
+                }
+                //si es el mismo numero que el anterior
+                else if (byteRead == byteList.get(pos - 1) && !maxRepeat) {
+                    byteList.add(byteRead);
+                    os.write(byteRead);
+                    firstRepeat = true;
+                    pos++;
+                } else {
+                    byteList.add(byteRead);
+                    os.write(byteRead);
+                    pos++;
+                    minRepeat = false;
+                    firstRepeat = false;
+                    maxRepeat = false;
+                }
+            }
+                /*//si el numero se repite dos veces y tiene que empezar otro bucle
                 if (cont == 2) {
                     maxRepeat = false;
                     cont = 0;

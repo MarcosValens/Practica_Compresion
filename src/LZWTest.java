@@ -1,9 +1,9 @@
 import org.junit.Test;
 
 import java.io.*;
-import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class LZWTest {
 
@@ -28,10 +28,10 @@ public class LZWTest {
         assertArrayEquals(new byte[]{0,'a',0,'b',0,'c'},
                 comp("abc".getBytes()));
 
-        /*assertArrayEquals(new byte[]{0,'a',1,'a'},
-                comp("aaa".getBytes()));*/
+        assertArrayEquals(new byte[]{0, 'a', 1, 'a'},
+                comp("aaa".getBytes()));
 
-        /*assertArrayEquals(new byte[]{0,'a',0,'a'},
+        assertArrayEquals(new byte[]{0, 'a', 0, 'a'},
                 comp("aa".getBytes()));
 
         assertArrayEquals(new byte[]{0, 'a', 1, 'a', 2, 'a', 3, 'a', 4, 'a', 3, 'a'},
@@ -55,6 +55,38 @@ public class LZWTest {
                         7, 112, 4, 105, 5, 32, 0, 109, 8, 121, 7, 108, 6, 106, 4, 110, 0, 111,
                         0, 46, 26, 46},
                 comp("Érase una vez, en un pais muy lejano...".getBytes()));
+        byte[] arT = new byte[300];
+        for (int i = 0; i < arT.length; i++) {
+            arT[i] = 0;
+        }
+
+        assertArrayEquals(new byte[]{0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0,
+                        9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 15,
+                        0, 16, 0, 17, 0, 18, 0, 19, 0, 20, 0, 21, 0, 22, 0, 23, 0},
+                comp(arT));
+
+        byte[] arT2 = new byte[948];
+        for (int i = 0; i < arT.length; i++) {
+            arT2[i] = 0;
+        }
+
+        assertArrayEquals(new byte[]{0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0,
+                        9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 15, 0, 16, 0, 17, 0, 18, 0,
+                        19, 0, 20, 0, 21, 0, 22, 0, 23, 0, 24, 0, 25, 0, 26, 0, 27, 0, 28, 0,
+                        29, 0, 30, 0, 31, 0, 32, 0, 33, 0, 34, 0, 35, 0, 36, 0, 37, 0, 38, 0,
+                        39, 0, 40, 0, 41, 0, 42, 0, 43, 0},
+                comp(arT2));
+
+
+        byte[] arT1 = new byte[300];
+        for (int i = 0; i < arT1.length; i++) {
+            arT1[i] = (byte) 255;
+        }
+
+        assertArrayEquals(new byte[]{0, (byte) 255, 1, (byte) 255, 2, (byte) 255, 3, (byte) 255, 4, (byte) 255, 5, (byte) 255, 6, (byte) 255, 7, (byte) 255, 8, (byte) 255,
+                        9, (byte) 255, 10, (byte) 255, 11, (byte) 255, 12, (byte) 255, 13, (byte) 255, 14, (byte) 255, 15,
+                        (byte) 255, 16, (byte) 255, 17, (byte) 255, 18, (byte) 255, 19, (byte) 255, 20, (byte) 255, 21, (byte) 255, 22, (byte) 255, 23, (byte) 255},
+                comp(arT1));
 
         byte[] ar = new byte[300];
         for (int i = 0; i < ar.length; i++) {
@@ -119,7 +151,7 @@ public class LZWTest {
                         (byte)249, 0, (byte)250, 0, (byte)251, 0, (byte)252, 0,
                         (byte)253, 0, (byte)254, 1, 1, 0, 2, 0, 3, 0, 4},
                 comp(ar2));
-    }*/}
+    }
 
     @Test
     public void decompress() throws Exception {

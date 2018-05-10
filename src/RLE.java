@@ -103,7 +103,6 @@ public class RLE {
     public static void decompress(InputStream is, OutputStream os) throws Exception {
         int byteRead;
         int pos = 0;
-        int cont = 0;
         boolean firstRepeat = false;
         boolean maxRepeat = false;
         boolean minRepeat = false;
@@ -125,12 +124,14 @@ public class RLE {
                             os.write(byteList.get(pos - 1));
                             pos++;
                         }
+                        //si se repite 255 veces
                         if (byteRead == 255) {
                             maxRepeat = true;
                         } else {
                             maxRepeat = false;
                             firstRepeat = false;
                         }
+                        //si se repite solo 2 veces
                     } else minRepeat = true;
                 }
                 //si es el mismo numero que el anterior
@@ -139,7 +140,9 @@ public class RLE {
                     os.write(byteRead);
                     firstRepeat = true;
                     pos++;
-                } else {
+                }
+                //si es un numero diferente (no contador)
+                else {
                     byteList.add(byteRead);
                     os.write(byteRead);
                     pos++;

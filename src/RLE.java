@@ -95,7 +95,7 @@ public class RLE {
                 if (firstRepeat && !maxRepeat && !minRepeat && byteList.get(pos - 1).equals(byteList.get(pos - 2))) {
 /************************************Si el numero de repeticiones no es 0 (1.2.1.1)************************************/
                     if (byteRead != 0) {
-/*******************************Introduce el byte las repeticiones del byte (1.2.1.1.1)********************************/
+/*******************************Introduce el numero de repeticiones del byte (1.2.1.1.1)*******************************/
                         for (int i = 0; i < byteRead; i++) {
                             byteList.add(byteList.get(pos - 1));
                             os.write(byteList.get(pos - 1));
@@ -105,7 +105,7 @@ public class RLE {
                         if (byteRead == 255) {
                             maxRepeat = true;
                         }
-/**************************************Si el byte se repite 255 veces (1.2.1.1.3)**************************************/
+/*******************Si el byte se repite mas de dos veces pero menos de 255 veces (1.2.1.1.3)**************************/
                         else {
                             maxRepeat = false;
                             firstRepeat = false;

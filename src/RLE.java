@@ -6,17 +6,17 @@ import java.util.List;
 public class RLE {
 
     public static void compress(InputStream is, OutputStream os) throws Exception {
-        //declaracion de variables
+/***********************************************Declaracion de variables***********************************************/
         int byteRead;
         int pos = 0;
         int repeated = 0;
         boolean firstRepeat = true;
         List<Byte> byteList = new ArrayList<>();
-        //lectura del InputStream
+/**********************************************Lectura del InputStream (1)*********************************************/
         while ((byteRead = is.read()) != -1) {
-            //si el array no esta vacio
+/********************************************Si la lista no esta vacia (1.1)*******************************************/
             if (!byteList.isEmpty()) {
-                //si es el segundo byte que se repite
+/***************************************Si es el segundo byte que se repite (1.1.1)************************************/
                 if (byteList.get(pos - 1) != (byte) byteRead && !firstRepeat && repeated == 0) {
                     byteList.add((byte) 0);
                     pos++;
@@ -26,20 +26,18 @@ public class RLE {
                     os.write(byteRead);
                     firstRepeat = true;
                 }
-                //si es el tercer byte que se repite (empezara a contar)
+/***************************************Si es el tercer byte que se repite (1.1.2)*************************************/
                 else if (byteList.get(pos - 1) == (byte) byteRead && firstRepeat) {
                     byteList.add((byte) byteRead);
                     pos++;
                     os.write(byteRead);
                     firstRepeat = false;
                 }
-
-                //empieza a contar cuantas veces se repite el byte
+/********************************************Contador de repeticiones (1.1.3)******************************************/
                 else if (byteList.get(pos - 1) == (byte) byteRead && !firstRepeat && repeated <= 254) {
                     repeated++;
                 }
-
-                //si el numero no se repite y repeated es mayor que 0 o 255
+/*****************************Si es un byte diferente y repeated es no es 0 o es 255 (1.1.4)***************************/
                 else if (byteList.get(pos - 1) != (byte) byteRead && repeated != 0 || repeated == 255) {
                     byteList.add((byte) repeated);
                     os.write(repeated);
@@ -50,25 +48,25 @@ public class RLE {
                     pos++;
                     firstRepeat = true;
                 }
-                //si es un byte nuevo
+/********************************************Si es un byte diferente(1.1.5)********************************************/
                 else {
                     byteList.add((byte) byteRead);
                     os.write(byteRead);
                     pos++;
                 }
             }
-            //si es el primer numero del array
+/*********************************************Si la lista esta vacia (1.2)*********************************************/
             else {
                 byteList.add((byte) byteRead);
                 os.write(byteRead);
                 pos++;
             }
         }
-        //si se acaba el documento y solo se repite dos veces
+/******************************Si solo hay dos repeticiones al final del InputStream (2.1)*****************************/
         if (repeated == 0 && byteList.get(pos - 1).equals(byteList.get(pos - 2))) {
             os.write((byte)0);
         }
-        //si se acaba el documento y hay que poner el numero de repeticiones
+/******************************Si hay mas de dos repeticiones al final del documento (2.2)*****************************/
         else if (repeated > 0) {
             os.write(repeated);
         }
@@ -76,47 +74,53 @@ public class RLE {
     }
 
     public static void decompress(InputStream is, OutputStream os) throws Exception {
+/***********************************************Declaracion de variables***********************************************/
         int byteRead;
         int pos = 0;
         boolean firstRepeat = false;
         boolean maxRepeat = false;
         boolean minRepeat = false;
         List<Integer> byteList = new ArrayList<>();
+/**********************************************Lectura del InputStream (1)*********************************************/
         while ((byteRead = is.read()) != -1) {
-            //si la lista no esta vacia
+/********************************************Si la lista no esta vacia (1.1)*******************************************/
             if (byteList.isEmpty()) {
                 byteList.add(byteRead);
                 os.write(byteRead);
                 pos++;
             }
-            //si contiene numeros
+/*******************************************Si la lista contiene numeros (1.2)*****************************************/            //si contiene numeros
             else {
-                //si es la cantidad de veces que se repite un numero
+/**********************Si el byte leido es el numero de repeticiones que tiene un byte(1.2.1)**************************/                //si es la cantidad de veces que se repite un numero
                 if (firstRepeat && !maxRepeat && !minRepeat && byteList.get(pos - 1).equals(byteList.get(pos - 2))) {
+/************************************Si el numero de repeticiones no es 0 (1.2.1.1)************************************/
                     if (byteRead != 0) {
+/*******************************Introduce el byte las repeticiones del byte (1.2.1.1.1)********************************/
                         for (int i = 0; i < byteRead; i++) {
                             byteList.add(byteList.get(pos - 1));
                             os.write(byteList.get(pos - 1));
                             pos++;
                         }
-                        //si se repite 255 veces
+/**************************************Si el byte se repite 255 veces (1.2.1.1.2)**************************************/                        //si se repite 255 veces
                         if (byteRead == 255) {
                             maxRepeat = true;
-                        } else {
+                        }
+/**************************************Si el byte se repite 255 veces (1.2.1.1.3)**************************************/
+                        else {
                             maxRepeat = false;
                             firstRepeat = false;
                         }
-                        //si se repite solo 2 veces
+/***********************************Si el byte se repite solo dos veces (1.2.1.1.2)************************************/                        //si se repite solo 2 veces
                     } else minRepeat = true;
                 }
-                //si es el mismo numero que el anterior
+/************************************Si es el segundo byte que se repite (1.2.1.2)*************************************/
                 else if (byteRead == byteList.get(pos - 1) && !maxRepeat) {
                     byteList.add(byteRead);
                     os.write(byteRead);
                     firstRepeat = true;
                     pos++;
                 }
-                //si es un numero diferente (no contador)
+/************************************Si es un byte diferente al anterior (1.2.1.3)*************************************/
                 else {
                     byteList.add(byteRead);
                     os.write(byteRead);
@@ -130,5 +134,3 @@ public class RLE {
         os.close();
     }
 }
-
-

@@ -28,7 +28,7 @@ public class LZW {
 
 
     public static void decompress(InputStream is, OutputStream os) throws Exception {
-        Token[] arrayToken = new Token[258];
+        Token[] arrayToken = new Token[257];
         int aux;
         int byteValue;
         int position = 0;

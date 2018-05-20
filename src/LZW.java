@@ -8,44 +8,52 @@ import java.util.List;
 public class LZW {
 
     public static void compress(InputStream is, OutputStream os) throws Exception {
-        /*Declaracion de variables*/
+/***********************************************Declaracion de variables***********************************************/
         Token[] arrayToken = new Token[257];
         int byteValue;
-        /*Inicio de lectura de InputStream*/
+/***********************************************Lectura del InputStream************************************************/
         while ((byteValue = is.read()) != -1) {
             Token tok = new Token(byteValue);
-            //seleccionamos donde introducir el token
+/******************************************Obtenencion de posicion en el array*****************************************/
             int arrayPosition = isNull(arrayToken);
-            //comprueba si ya existe el token en el diccionario
+/***************************************Comprueba si existe el token y lo guarda***************************************/
             tok = exist(tok, arrayToken, is);
             arrayToken[arrayPosition] = tok;
+/***********************Si el array esta lleno escribe sus valores en el OutputStream y reinicia el array**************/
             if (arrayPosition == 256){
                 translateCompress(arrayToken, os);
                 arrayToken = new Token[arrayToken.length];
             }
         }
+/*********************************Escribe los valores del array y cierra el OutputStream*******************************/
         translateCompress(arrayToken, os);
         os.close();
     }
 
 
     public static void decompress(InputStream is, OutputStream os) throws Exception {
+/***********************************************Declaracion de variables***********************************************/
         Token[] arrayToken = new Token[257];
         int byteValue;
         int position = 0;
         int posRead = 0;
         int arrayPosition = 1;
+/***********************************************Lectura del InputStream************************************************/
         while ((byteValue = is.read()) != -1) {
+/***********************************Si el byte leido hace referencia a una posicion************************************/
             if (posRead % 2 == 0) {
                 position = byteValue;
                 posRead++;
-            } else {
+            }
+/*************************************Si el byte leido hace referencia a un byte***************************************/
+            else {
                 Token tok = new Token(byteValue);
                 tok.setPosition(position);
                 arrayToken[arrayPosition] = tok;
                 arrayPosition++;
                 posRead++;
             }
+/*************************************Si el array esta lleno escribe el contenido**************************************/
             if (arrayPosition==257){
                 translateDecompress(arrayToken, os);
                 arrayToken = new Token[arrayToken.length];
@@ -53,26 +61,27 @@ public class LZW {
 
             }
         }
+/********************************Escribe el contenido del array y cierra el OutputStream*******************************/
         translateDecompress(arrayToken, os);
         os.close();
     }
 
     private static Token exist(Token token, Token[] arrayToken, InputStream is) throws IOException {
-        //compara el token pasado con los del array
+/****************************************Recorre el array para comparar tokens*****************************************/
         for (int i = 1; i < arrayToken.length; i++) {
-            //si encuentra un null es que el token no existe
+/******************************Si encuentra un null es que no existe y devuelve el token*******************************/
             if (arrayToken[i] == null) {
                 return token;
             }
-            //si el token existe...
+/************************************************Comparacion de tokens*************************************************/
             else {
                 if (token.byteValue == arrayToken[i].byteValue && token.position == arrayToken[i].position) {
                     int byteValue;
-                    //leemos el siguiente byte, si este es -1 devolvemos el token actual
+/**********************Lectura del siguiente, si llega al final del InputStream devuelve el token**********************/
                     if ((byteValue = is.read()) == -1) {
                         return token;
                     }
-                    //si no es el final del documento, modificamos el token con los nuevos parametros y volvemos a compararlo
+/************************************Modifica el token actual y vuelve a comparar**************************************/
                     else {
                         token.setPosition(i);
                         token.byteValue = byteValue;
@@ -84,6 +93,7 @@ public class LZW {
         return null;
     }
 
+/***********************************Obtencion de la posicion donde insertar el token***********************************/
     private static int isNull(Token[] arrayToken) {
         int arrayPosition = 1;
         for (int i = 1; i < arrayToken.length; i++) {
@@ -94,6 +104,7 @@ public class LZW {
         return arrayPosition;
     }
 
+/*********************************Escritura del OutputStream para la funcion compress**********************************/
     private static void translateCompress(Token[] arrayToken, OutputStream os) throws IOException {
         for (Token token : arrayToken) {
             if (token != null) {
@@ -103,20 +114,28 @@ public class LZW {
         }
     }
 
+/********************************Escritura del OutputStream para la funcion decompress*********************************/
     private static void translateDecompress(Token[] tokenArray, OutputStream os) throws IOException {
         List<Integer> auxList = new ArrayList<>();
         for (Token token : tokenArray) {
             if (token != null) {
+/***************************Si el token tiene posicion cero, escribe el valor de byteValue*****************************/
                 if (token.position == 0) {
                     os.write(token.byteValue);
-                } else {
+                }
+/****************************************Si el token hace referencia a un byte*****************************************/
+                else {
                     int aux = token.position;
+/************************************Vacias auxList y guardas el valor de byteValue************************************/
                     auxList.clear();
                     auxList.add(token.byteValue);
+                    /*Mientras aux no sea cero, añades el valor de byteValue del token que esta en la posicion aux del array en la lista y*/
+/********************modificas aux con la posicion del token que esta en la posicion aux del array*********************/
                     while (aux != 0) {
                         auxList.add(tokenArray[aux].byteValue);
                         aux = tokenArray[aux].position;
                     }
+/************************************Invierte la lista y escribe en el OutputStream************************************/
                     Collections.reverse(auxList);
                     for (Integer anAuxList : auxList) {
                         os.write(anAuxList);
@@ -126,7 +145,3 @@ public class LZW {
         }
     }
 }
-
-
-
-

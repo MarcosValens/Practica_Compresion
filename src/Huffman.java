@@ -25,7 +25,7 @@ public class Huffman {
         while (tree.size() > 1) {
             Node littleLeft = littleNode(tree);
             Node littleRight = littleNode(tree);
-            tree.add(new Node(littleLeft.frequency + littleRight.frequency, 0, littleLeft, littleRight));
+            tree.add(new Node(littleLeft.frequency + littleRight.frequency, -9999, littleLeft, littleRight));
         }
         tree.sort(Comparator.comparingInt(node -> node.byteValue));
         tour(tree.get(0), direction, dictionary);
@@ -46,10 +46,9 @@ public class Huffman {
     }
 
     static void tour(Node node, StringBuilder direction, HashMap dictionary) {
-        System.out.println("Esatamos en el nodo: " + node.byteValue + " con el path: " + direction);
-        if (node.byteValue != 0) {
+        if (node.byteValue != -9999) {
             String path = direction.toString();
-            dictionary.put(node.byteValue, path);
+            dictionary.put((byte)node.byteValue, path);
         }
         if (node.left != null) {
             direction.append(0);
@@ -65,10 +64,10 @@ public class Huffman {
         }
     }
 
-    static String toBinary(HashMap dictionary, List<Byte> input) throws IOException {
+    static String toBinary(HashMap dictionary, List<Byte> input) {
         String binary = "";
         for (Byte anInput : input) {
-            int byte_ = anInput;
+            byte byte_ = anInput;
             binary += dictionary.get(byte_);
         }
         return binary;
@@ -83,7 +82,7 @@ public class Huffman {
                 bits = "";
             }
         }
-        if (bits.length() < 7){
+        if (bits.length() < 7 && !bits.equals("")){
             int zeros = 7 - bits.length();
             for (int i = 0; i <= zeros ; i++) {
                 bits += "0";

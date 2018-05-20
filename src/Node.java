@@ -4,7 +4,6 @@ public class Node {
     int byteValue;
     Node left;
     Node right;
-    String path = "";
     public Node (int frequency,int byteValue, Node left, Node right){
         this.frequency = frequency;
         this.byteValue = byteValue;

@@ -44,5 +44,4 @@ public class HuffmanTest {
 
         assertEquals("f8e9bfe71be57779b802ee2444fdc7a5", Utils.md5(new File(s2)));
     }
-
 }

@@ -22,16 +22,15 @@ public class Huffman {
                 tree.add(n);
             }
         }
+        tree.sort(Comparator.comparingInt(node -> (byte)node.byteValue));
         while (tree.size() > 1) {
             Node littleLeft = littleNode(tree);
             Node littleRight = littleNode(tree);
             tree.add(new Node(littleLeft.frequency + littleRight.frequency, -9999, littleLeft, littleRight));
         }
-        tree.sort(Comparator.comparingInt(node -> node.byteValue));
         tour(tree.get(0), direction, dictionary);
         String binary = toBinary(dictionary,input);
         translate(binary,os);
-
     }
 
     public static Node littleNode(List<Node> tree) {
